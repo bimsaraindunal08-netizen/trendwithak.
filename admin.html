@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Trend With AK</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 100px auto 50px;
+            padding: 20px;
+        }
+
+        .login-section {
+            max-width: 400px;
+            margin: 150px auto;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .login-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: var(--font-body);
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .admin-section {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .admin-section h3 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .video-item-admin {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .video-item-admin h4 {
+            color: var(--blue-accent);
+            margin-bottom: 15px;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 300px;
+            margin-top: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .image-preview.show {
+            display: block;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .save-btn {
+            background: var(--accent);
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .save-btn:hover {
+            background: #ff1744;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--text-main);
+            padding: 14px 32px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #4caf50;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--blue-accent);
+            color: #000;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .file-input-label:hover {
+            background: #00d4cc;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Login Section -->
+    <div id="loginSection" class="login-section">
+        <h2>ADMIN LOGIN</h2>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="adminPassword" placeholder="Enter admin password">
+        </div>
+        <button class="btn primary-btn" onclick="login()" style="width: 100%;">Login</button>
+        <p id="loginError" style="color: var(--accent); margin-top: 15px; display: none; text-align: center;">Incorrect
+            password!</p>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-container hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h1>ADMIN <span class="gradient-text">PANEL</span></h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            Changes saved successfully!
+        </div>
+
+        <!-- Profile Section -->
+        <div class="admin-section">
+            <h3><i class="fas fa-user"></i> Profile Settings</h3>
+            <div class="form-group">
+                <label>Profile Image URL</label>
+                <input type="text" id="profileImage" placeholder="Enter profile image URL">
+            </div>
+            <div class="form-group">
+                <label>Or Upload Profile Image</label>
+                <div class="file-input-wrapper">
+                    <label class="file-input-label" for="profileImageUpload">
+                        <i class="fas fa-upload"></i> Choose Image
+                    </label>
+                    <input type="file" id="profileImageUpload" accept="image/*" onchange="handleImageUpload(this, 'profileImage', 'profilePreview')">
+                </div>
+                <img id="profilePreview" class="image-preview" alt="Profile Preview">
+            </div>
+        </div>
+
+        <!-- TikTok Links -->
+        <div class="admin-section">
+            <h3><i class="fab fa-tiktok"></i> TikTok Settings</h3>
+            <div class="form-group">
+                <label>TikTok Username</label>
+                <input type="text" id="tiktokUsername" placeholder="@trendwithak">
+            </div>
+            <div class="form-group">
+                <label>TikTok Profile URL</label>
+                <input type="text" id="tiktokProfileUrl" placeholder="https://www.tiktok.com/@trendwithak">
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="admin-section">
+            <h3><i class="fas fa-chart-line"></i> Statistics</h3>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Followers Count</label>
+                    <input type="text" id="followersCount" placeholder="99.4K">
+                </div>
+                <div class="form-group">
+                    <label>Total Likes</label>
+                    <input type="text" id="likesCount" placeholder="884.5K">
+                </div>
+                <div class="form-group">
+                    <label>Following Count</label>
+                    <input type="text" id="followingCount" placeholder="79">
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Videos -->
+        <div class="admin-section">
+            <h3><i class="fas fa-video"></i> Featured Content Videos</h3>
+
+            <!-- Video 1 -->
+            <div class="video-item-admin">
+                <h4>Video 1</h4>
+                <div class="form-group">
+                    <label>Video Title</label>
+                    <input type="text" id="video1Title" placeholder="Viral Dance">
+                </div>
+                <div class="form-group">
+                    <label>View Count</label>
+                    <input type="text" id="video1Views" placeholder="1.2M Views">
+                </div>
+                <div class="form-group">
+                    <label>TikTok Video URL</label>
+                    <input type="text" id="video1Link" placeholder="https://www.tiktok.com/@trendwithak/video/...">
+                </div>
+                <div class="form-group">
+                    <label>Thumbnail Image URL</label>
+                    <input type="text" id="video1Thumbnail" placeholder="Enter thumbnail URL">
+                </div>
+                <div class="form-group">
+                    <label>Or Upload Thumbnail</label>
+                    <div class="file-input-wrapper">
+                        <label class="file-input-label" for="video1Upload">
+                            <i class="fas fa-upload"></i> Choose Image
+                        </label>
+                        <input type="file" id="video1Upload" accept="image/*" onchange="handleImageUpload(this, 'video1Thumbnail', 'video1Preview')">
+                    </div>
+                    <img id="video1Preview" class="image-preview" alt="Video 1 Preview">
+                </div>
+            </div>
+
+            <!-- Video 2 -->
+            <div class="video-item-admin">
+                <h4>Video 2</h4>
+                <div class="form-group">
+                    <label>Video Title</label>
+                    <input type="text" id="video2Title" placeholder="Tech Review">
+                </div>
+                <div class="form-group">
+                    <label>View Count</label>
+                    <input type="text" id="video2Views" placeholder="890K Views">
+                </div>
+                <div class="form-group">
+                    <label>TikTok Video URL</label>
+                    <input type="text" id="video2Link" placeholder="https://www.tiktok.com/@trendwithak/video/...">
+                </div>
+                <div class="form-group">
+                    <label>Thumbnail Image URL</label>
+                    <input type="text" id="video2Thumbnail" placeholder="Enter thumbnail URL">
+                </div>
+                <div class="form-group">
+                    <label>Or Upload Thumbnail</label>
+                    <div class="file-input-wrapper">
+                        <label class="file-input-label" for="video2Upload">
+                            <i class="fas fa-upload"></i> Choose Image
+                        </label>
+                        <input type="file" id="video2Upload" accept="image/*" onchange="handleImageUpload(this, 'video2Thumbnail', 'video2Preview')">
+                    </div>
+                    <img id="video2Preview" class="image-preview" alt="Video 2 Preview">
+                </div>
+            </div>
+
+            <!-- Video 3 -->
+            <div class="video-item-admin">
+                <h4>Video 3</h4>
+                <div class="form-group">
+                    <label>Video Title</label>
+                    <input type="text" id="video3Title" placeholder="Travel Vlog">
+                </div>
+                <div class="form-group">
+                    <label>View Count</label>
+                    <input type="text" id="video3Views" placeholder="2.1M Views">
+                </div>
+                <div class="form-group">
+                    <label>TikTok Video URL</label>
+                    <input type="text" id="video3Link" placeholder="https://www.tiktok.com/@trendwithak/video/...">
+                </div>
+                <div class="form-group">
+                    <label>Thumbnail Image URL</label>
+                    <input type="text" id="video3Thumbnail" placeholder="Enter thumbnail URL">
+                </div>
+                <div class="form-group">
+                    <label>Or Upload Thumbnail</label>
+                    <div class="file-input-wrapper">
+                        <label class="file-input-label" for="video3Upload">
+                            <i class="fas fa-upload"></i> Choose Image
+                        </label>
+                        <input type="file" id="video3Upload" accept="image/*" onchange="handleImageUpload(this, 'video3Thumbnail', 'video3Preview')">
+                    </div>
+                    <img id="video3Preview" class="image-preview" alt="Video 3 Preview">
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="admin-section">
+            <h3><i class="fas fa-envelope"></i> Contact Information</h3>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="contactEmail" placeholder="collab@trendwithak.com">
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Instagram URL</label>
+                    <input type="text" id="instagramUrl" placeholder="https://instagram.com/...">
+                </div>
+                <div class="form-group">
+                    <label>Twitter URL</label>
+                    <input type="text" id="twitterUrl" placeholder="https://twitter.com/...">
+                </div>
+                <div class="form-group">
+                    <label>YouTube URL</label>
+                    <input type="text" id="youtubeUrl" placeholder="https://youtube.com/...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="btn-group">
+            <button class="save-btn" onclick="saveChanges()">
+                <i class="fas fa-save"></i> Save All Changes
+            </button>
+            <a href="index.html" class="btn secondary-btn">
+                <i class="fas fa-eye"></i> View Website
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Admin password - Change this to your desired password
+        const ADMIN_PASSWORD = 'admin123';
+
+        // Login function
+        function login() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadCurrentData();
+                sessionStorage.setItem('adminLoggedIn', 'true');
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('adminPassword').value = '';
+        }
+
+        // Check if already logged in
+        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            loadCurrentData();
+        }
+
+        // Handle image upload and convert to base64
+        function handleImageUpload(input, targetInputId, previewId) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const base64String = e.target.result;
+                    document.getElementById(targetInputId).value = base64String;
+                    const preview = document.getElementById(previewId);
+                    preview.src = base64String;
+                    preview.classList.add('show');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Load current data from localStorage
+        function loadCurrentData() {
+            const data = JSON.parse(localStorage.getItem('websiteData') || '{}');
+
+            // Profile
+            document.getElementById('profileImage').value = data.profileImage || '';
+            if (data.profileImage) {
+                document.getElementById('profilePreview').src = data.profileImage;
+                document.getElementById('profilePreview').classList.add('show');
+            }
+
+            // TikTok
+            document.getElementById('tiktokUsername').value = data.tiktokUsername || '@trendwithak';
+            document.getElementById('tiktokProfileUrl').value = data.tiktokProfileUrl || 'https://www.tiktok.com/@trendwithak';
+
+            // Stats
+            document.getElementById('followersCount').value = data.followersCount || '99.4K';
+            document.getElementById('likesCount').value = data.likesCount || '884.5K';
+            document.getElementById('followingCount').value = data.followingCount || '79';
+
+            // Videos
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`video${i}Title`).value = data[`video${i}Title`] || '';
+                document.getElementById(`video${i}Views`).value = data[`video${i}Views`] || '';
+                document.getElementById(`video${i}Link`).value = data[`video${i}Link`] || '';
+                document.getElementById(`video${i}Thumbnail`).value = data[`video${i}Thumbnail`] || '';
+                
+                if (data[`video${i}Thumbnail`]) {
+                    document.getElementById(`video${i}Preview`).src = data[`video${i}Thumbnail`];
+                    document.getElementById(`video${i}Preview`).classList.add('show');
+                }
+            }
+
+            // Contact
+            document.getElementById('contactEmail').value = data.contactEmail || 'collab@trendwithak.com';
+            document.getElementById('instagramUrl').value = data.instagramUrl || '';
+            document.getElementById('twitterUrl').value = data.twitterUrl || '';
+            document.getElementById('youtubeUrl').value = data.youtubeUrl || '';
+        }
+
+        // Save changes to localStorage
+        function saveChanges() {
+            const data = {
+                profileImage: document.getElementById('profileImage').value,
+                tiktokUsername: document.getElementById('tiktokUsername').value,
+                tiktokProfileUrl: document.getElementById('tiktokProfileUrl').value,
+                followersCount: document.getElementById('followersCount').value,
+                likesCount: document.getElementById('likesCount').value,
+                followingCount: document.getElementById('followingCount').value,
+                video1Title: document.getElementById('video1Title').value,
+                video1Views: document.getElementById('video1Views').value,
+                video1Link: document.getElementById('video1Link').value,
+                video1Thumbnail: document.getElementById('video1Thumbnail').value,
+                video2Title: document.getElementById('video2Title').value,
+                video2Views: document.getElementById('video2Views').value,
+                video2Link: document.getElementById('video2Link').value,
+                video2Thumbnail: document.getElementById('video2Thumbnail').value,
+                video3Title: document.getElementById('video3Title').value,
+                video3Views: document.getElementById('video3Views').value,
+                video3Link: document.getElementById('video3Link').value,
+                video3Thumbnail: document.getElementById('video3Thumbnail').value,
+                contactEmail: document.getElementById('contactEmail').value,
+                instagramUrl: document.getElementById('instagramUrl').value,
+                twitterUrl: document.getElementById('twitterUrl').value,
+                youtubeUrl: document.getElementById('youtubeUrl').value
+            };
+
+            localStorage.setItem('websiteData', JSON.stringify(data));
+
+            // Show success message
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.add('show');
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Allow Enter key to login
+        document.getElementById('adminPassword')?.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
